@@ -1,4 +1,4 @@
-from typing import Tuple, Type, TypeVar, overload
+from typing import Optional, Tuple, Type, TypeVar, overload
 
 import snecs
 from snecs.component import Component
@@ -15,7 +15,7 @@ def entity_component(entity_id: EntityID, component_type: Type[T1]) -> T1:
     return snecs.entity_component(entity_id, component_type)
 
 
-def try_entity_component(entity_id: EntityID, component_type: Type[T1]) -> T1 | None:
+def try_entity_component(entity_id: EntityID, component_type: Type[T1]) -> Optional[T1]:
     try:
         return snecs.entity_component(entity_id, component_type)
     except KeyError:
@@ -51,3 +51,34 @@ def entity_components(
 
 def entity_components(entity_id, component_types):  # type: ignore
     return snecs.entity_components(entity_id, component_types).values()
+
+
+@overload
+def try_entity_components(
+    entity_id: EntityID,
+    component_types: Tuple[Type[T1]],
+) -> Optional[Tuple[T1]]:
+    ...
+
+
+@overload
+def try_entity_components(
+    entity_id: EntityID,
+    component_types: Tuple[Type[T1], Type[T2]],
+) -> Optional[Tuple[T1, T2]]:
+    ...
+
+
+@overload
+def try_entity_components(
+    entity_id: EntityID,
+    component_types: Tuple[Type[T1], Type[T2], Type[T3]],
+) -> Optional[Tuple[T1, T2, T3]]:
+    ...
+
+
+def try_entity_components(entity_id, component_types):  # type: ignore
+    try:
+        return snecs.entity_components(entity_id, component_types).values()
+    except KeyError:
+        return None

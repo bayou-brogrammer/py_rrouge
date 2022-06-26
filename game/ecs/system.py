@@ -4,7 +4,7 @@ from typing import Callable, Generic, Iterator, Tuple, TypeVar, get_args, get_or
 
 from snecs.typedefs import EntityID
 
-from game.query import typed_compiled_query
+from .query import typed_compiled_query
 
 T = TypeVar("T")
 C = TypeVar("C")

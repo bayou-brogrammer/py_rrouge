@@ -1,50 +1,35 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Iterable, Type, TypeVar
-
-import snecs
-from snecs.typedefs import EntityID
+from typing import TYPE_CHECKING, Collection, Optional, TypeVar
 
 from game.components.fov import FieldOfView
 from game.components.position import Position
+from game.ecs import EntityManager
 from game.node import Node
 
 if TYPE_CHECKING:
     from snecs import Component
 
-    C = TypeVar("C", bound=Component)
+    T1 = TypeVar("T1", bound="Component")
+    T2 = TypeVar("T2", bound="Component")
+    T3 = TypeVar("T3", bound="Component")
 
 
-class Entity(Node):
+class Entity(EntityManager, Node):
     """A generic object to represent players, enemies, items, etc."""
 
-    id: EntityID
-
-    def __init__(self, id: EntityID) -> None:
-        super().__init__()
-        self.id = id
-
-    def remove_component(self, component_type: Type[C]) -> None:
-        """Return the component associated with this entity."""
-        return snecs.remove_component(self.id, component_type)
-
-    def get_component(self, component_type: Type[C]) -> C:
-        """Return the component associated with this entity."""
-        return snecs.entity_component(self.id, component_type)
-
-    def get_components(self, components: Iterable[Type[C]]) -> Dict[Type[Component], Component]:
-        """Return the component associated with this entity."""
-        return snecs.entity_components(self.id, components)
+    def __init__(self, components: Collection[Component] = ()) -> None:
+        super().__init__(components=components)
 
 
 class Actor(Entity):
-    def __init__(self, id: EntityID) -> None:
-        super().__init__(id)
+    def __init__(self, components: Collection[Component] = ()) -> None:
+        super().__init__(components)
 
     @property
-    def position(self) -> Position:
-        return self.get_component(Position)
+    def position(self) -> Optional[Position]:
+        return self.try_get_component(Position)
 
     @property
-    def fov(self) -> FieldOfView:
-        return self.get_component(FieldOfView)
+    def fov(self) -> Optional[FieldOfView]:
+        return self.try_get_component(FieldOfView)

@@ -5,8 +5,7 @@ import tcod
 import g
 from game.components.fov import FieldOfView
 from game.components.position import Position
-
-from .system import System
+from game.ecs import System
 
 DrawCTypes = Tuple[Type[Position], Type[FieldOfView]]
 DrawCs = Tuple[Position, FieldOfView]

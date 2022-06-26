@@ -4,9 +4,9 @@ import numpy as np
 import tcod
 
 import g
+from game import ecs
 from game.components.position import Position
 from game.components.renderable import Renderable
-from game.query import typed_compiled_query
 from game.tiles import tile_graphics
 
 # RENDERABLE_QUERY = Query([Position, Renderable]).compile()
@@ -115,6 +115,9 @@ from game.tiles import tile_graphics
 #         self.map_panel.clear()
 
 
+RENDERABLE_QUERY = ecs.typed_compiled_query((Position, Renderable))
+
+
 def render_map(console: tcod.Console) -> None:
     """Draw Map"""
     gamemap = g.engine.gamemap
@@ -132,7 +135,7 @@ def render_map(console: tcod.Console) -> None:
     if g.fullbright:
         visible = np.ones_like(visible)
 
-    for _, (p, r) in sorted(RENDERABLE_QUERY(), key=lambda x: x[1][1].render_order):
+    for _, (p, r) in sorted(RENDERABLE_QUERY(), key=lambda x: x[1][1].render_order.value):
         if not visible[p.x, p.y]:
             continue  # Skip entities that are not in the FOV.
         light[p.x, p.y]["ch"] = ord(r.char)
@@ -147,12 +150,9 @@ def render_map(console: tcod.Console) -> None:
         default=dark,
     )
 
-    for _, (p, r) in sorted(RENDERABLE_QUERY(), key=lambda x: x[1][1].render_order):
+    for _, (p, r) in sorted(RENDERABLE_QUERY(), key=lambda x: x[-1][-1].render_order.value):
         if not visible[p.x, p.y]:
             continue  # Skip entities that are not in the FOV.
         console.print(p.x, p.y, r.char, r.color)
 
     visible.choose((gamemap.memory, light), out=gamemap.memory)
-
-
-RENDERABLE_QUERY = typed_compiled_query((Position, Renderable))

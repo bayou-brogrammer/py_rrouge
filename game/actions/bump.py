@@ -13,7 +13,7 @@ class Move(ActionWithDirection):
     def perform(self) -> None:
         """Move the entity in the given direction."""
 
-        pos = ecs.entity_component(self.entity.id, (Position))
+        pos = self.entity.get_component(Position)
         dest_x, dest_y = pos.x + self.dx, pos.y + self.dy
 
         if not g.engine.gamemap.in_bounds(dest_x, dest_y):
@@ -24,7 +24,6 @@ class Move(ActionWithDirection):
         #     raise game.exceptions.Impossible("That way is blocked.")  # Destination is blocked by an entity.
 
         pos.x, pos.y = dest_x, dest_y
-
         if (fov := ecs.try_entity_component(self.entity.id, FieldOfView)) is not None:
             fov.dirty = True
 
