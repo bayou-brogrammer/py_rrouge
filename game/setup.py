@@ -18,6 +18,6 @@ def new_game() -> None:
     for room in gamemap.rooms[1:]:
         spawn_monster(gamemap, *room.center)
 
+    g.engine.turn_state = game.engine.TurnState.PreRun
     g.engine.gamemap = gamemap
     g.engine.player = player
-    g.engine.run_systems()

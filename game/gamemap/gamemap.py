@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Any, Iterator, List, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, List, Optional, Tuple
 
 import numpy as np
 import tcod
 from numpy.typing import NDArray
+from snecs.typedefs import EntityID
 
 from constants import SHROUD
+from game import ecs
+from game.components.stats import CombatStats
 from game.node import Node
 from game.tiles import TileType
 
@@ -37,20 +40,17 @@ class GameMap(Node):
 
         self.memory: NDArray[Any] = np.full((width, height), fill_value=SHROUD, order="F")
 
-        a = np.array([])
-        b = np.empty([width * height, a.shape[0]])
-        self.test = b[:] = a
+        self.tile_content: List[List[EntityID]] = [[] for _ in range(self.width * self.height)]
 
+        self.blocked: NDArray[np.bool_] = np.full((width, height), fill_value=False, order="F")
         self.visible = np.full((width, height), fill_value=False, order="F")  # Tiles the player can currently see
         self.explored = np.full((width, height), fill_value=False, order="F")  # Tiles the player has seen before
 
         self.generate_map()
 
-    def clear(self) -> None:
-        """Clear the map of all tiles."""
-        a = np.array([])
-        b = np.empty([self.width * self.height, a.shape[0]])
-        self.test = b[:] = a
+    def idx(self, x: int, y: int) -> int:
+        """Return the index of the tile at the given coordinates."""
+        return (y * self.width) + x
 
     def __tunnel_between__(self, start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
         """Return an L-shaped tunnel between these two points."""
@@ -96,3 +96,23 @@ class GameMap(Node):
     def in_bounds(self, x: int, y: int) -> bool:
         """check if the given coordinates are within the bounds of the map"""
         return 0 <= x < self.width and 0 <= y < self.height
+
+    def is_blocked(self, x: int, y: int) -> bool:
+        """Returns an entity that blocks the position at x,y if one exists, otherwise returns None."""
+        return self.blocked[x, y]
+
+    def populate_blocked(self) -> None:
+        for idx, tile in np.ndenumerate(self.tiles):
+            self.blocked[idx[0], idx[1]] = tile == TileType.WALL.value
+
+    def clear_content_index(self) -> None:
+        """Clear the map of all tiles."""
+        for content in self.tile_content:
+            content.clear()
+
+    def get_actor_at_location(self, x: int, y: int) -> Optional[EntityID]:
+        """Return the actor at the given location."""
+        for entity in self.tile_content[self.idx(x, y)]:
+            if ecs.try_entity_component(entity, CombatStats):
+                return entity
+        return None

@@ -1,5 +1,8 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
+from snecs.typedefs import EntityID
+
+import g
 from game.components.position import Position
 from game.entity import Actor
 
@@ -33,15 +36,15 @@ class ActionWithDirection(Action):
         pos = self.entity.get_component(Position)
         return pos.x + self.dx, pos.y + self.dy
 
-    # @property
-    # def blocking_entity(self) -> Optional[game.entity.Entity]:
-    #     """Return the blocking entity at this actions destination.."""
-    #     return g.engine.gamemap.get_blocking_entity_at(*self.dest_xy)
+    @property
+    def blocking_entity(self) -> bool:
+        """Return the blocking entity at this actions destination.."""
+        return g.engine.gamemap.is_blocked(*self.dest_xy)
 
-    # @property
-    # def target_actor(self) -> Optional[game.entity.Actor]:
-    #     """Return the actor at this actions destination."""
-    #     return g.engine.gamemap.get_actor_at_location(*self.dest_xy)
+    @property
+    def target_actor(self) -> Optional[EntityID]:
+        """Return the actor at this actions destination."""
+        return g.engine.gamemap.get_actor_at_location(*self.dest_xy)
 
     def perform(self) -> None:
         raise NotImplementedError()

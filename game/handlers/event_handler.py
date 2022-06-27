@@ -45,5 +45,18 @@ class EventHandler(BaseEventHandler):
             g.mouse_pos = None
 
     def on_render(self, console: tcod.Console) -> None:
+        from game.engine import TurnState
+
+        match g.engine.turn_state:
+            case TurnState.PreRun:
+                g.engine.run_systems()
+                g.engine.turn_state = TurnState.PlayerTurn
+            case TurnState.PlayerTurn:
+                g.engine.run_systems()
+                g.engine.turn_state = TurnState.MonsterTurn
+            case TurnState.MonsterTurn:
+                g.engine.run_systems()
+                g.engine.turn_state = TurnState.PlayerTurn
+
         rendering.render_map(console)
         # game.rendering.render_ui(console, self.engine)

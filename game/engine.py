@@ -6,6 +6,7 @@ import traceback
 from enum import Enum, auto
 from typing import List
 
+import snecs
 import tcod
 
 import constants
@@ -25,6 +26,7 @@ class TurnState(Enum):
     AwaitingInput = auto()
     PlayerTurn = auto()
     MonsterTurn = auto()
+    MainMenu = auto()
 
 
 class Engine(Node):
@@ -35,7 +37,7 @@ class Engine(Node):
     mouse_location = (0, 0)
 
     player: Actor  # Entity ID
-    turn_state: TurnState = TurnState.PreRun
+    turn_state: TurnState = TurnState.MainMenu
     systems: List[ecs.System]  # type: ignore
 
     def __init__(self, context: tcod.context.Context) -> None:
@@ -46,7 +48,14 @@ class Engine(Node):
         self.event_handler: EventHandlerLike = game.handlers.MainMenuHandler()
         self.root_console = tcod.Console(constants.screen_width, constants.screen_height, order="F")
 
-        self.systems = [systems.FovSystem(), systems.AISystem()]
+        self.systems = [
+            systems.PlayerInputSystem(),
+            systems.FovSystem(),
+            systems.AISystem(),
+            systems.IndexingSystem(),
+            systems.MeleeCombatSystem(),
+            systems.DamageSystem(),
+        ]
 
     def run_game(self) -> None:
         try:
@@ -74,7 +83,7 @@ class Engine(Node):
         for system in self.systems:
             system.process()
 
-        self.__transition_state__()
+        snecs.process_pending_deletions()
 
     def render(self) -> None:
         """Render the game."""
@@ -85,14 +94,25 @@ class Engine(Node):
     def tick(self) -> None:
         self.render()
 
-        try:
-            for event in tcod.event.wait():
-                self.context.convert_event(event)
-                self.event_handler = self.event_handler.handle_events(event)
-        except Exception:  # Handle exceptions in game.
-            traceback.print_exc()  # Print error to stderr.
+        match self.turn_state:
+            case TurnState.PreRun:
+                self.run_systems()
+                self.__transition_state__()
+            case TurnState.PlayerTurn:
+                self.run_systems()
+            case TurnState.MonsterTurn:
+                self.run_systems()
+                self.__transition_state__()
 
-            # Then print the error to the message log.
-            if isinstance(self.event_handler, game.handlers.EventHandler):
-                logger.debug("Stack Error: :)")
-            #     g.engine.message_log.add_message(traceback.format_exc(), game.color.error)
+        if self.turn_state == TurnState.MainMenu:
+            try:
+                for event in tcod.event.wait():
+                    self.context.convert_event(event)
+                    self.event_handler = self.event_handler.handle_events(event)
+            except Exception:  # Handle exceptions in game.
+                traceback.print_exc()  # Print error to stderr.
+
+            #     # Then print the error to the message log.
+            #     if isinstance(self.event_handler, game.handlers.EventHandler):
+            #         logger.debug("Stack Error: :)")
+            #     #     g.engine.message_log.add_message(traceback.format_exc(), game.color.error)

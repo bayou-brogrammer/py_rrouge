@@ -68,7 +68,7 @@ class MainGameEventHandler(EventHandler):
 
         try:
             action.perform()
-            g.engine.run_systems()
+            # g.engine.run_systems()
         except exceptions.Impossible as exc:
             logger.fatal(exc.args[0])
             return self
@@ -79,8 +79,6 @@ class MainGameEventHandler(EventHandler):
         return self
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        # from game.engine import TurnState
-
         key = event.sym
 
         if key in MOVE_KEYS:

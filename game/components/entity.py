@@ -5,5 +5,9 @@ class Player(RegisteredComponent):
     ...
 
 
+class BlocksTile(RegisteredComponent):
+    ...
+
+
 class AI(RegisteredComponent):
     ...

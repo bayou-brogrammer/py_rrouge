@@ -27,8 +27,8 @@ class Actor(Entity):
         super().__init__(components)
 
     @property
-    def position(self) -> Optional[Position]:
-        return self.try_get_component(Position)
+    def position(self) -> Position:
+        return self.get_component(Position)
 
     @property
     def fov(self) -> Optional[FieldOfView]:

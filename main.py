@@ -27,9 +27,9 @@ def main() -> None:
         rows=constants.screen_height,
         columns=constants.screen_width,
         renderer=tcod.RENDERER_OPENGL2,  # OpenGL Bonks out and fallsback to tcod.RENDERER_SDL2
-    ) as context:
+    ) as g.context:
 
-        g.engine = game.engine.Engine(context=context)
+        g.engine = game.engine.Engine(context=g.context)
         g.engine.run_game()
 
 
