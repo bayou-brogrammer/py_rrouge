@@ -20,7 +20,7 @@ class MeleeCombatSystem(System[MeleeCTypes, MeleeCs]):
                 if target_stats and target_stats.hp > 0:
                     damage = max(0, stats.power - target_stats.defense)
 
-                    attack_desc = f"{name.name.capitalize()} attacks {target_name.name}"
+                    attack_desc = f"{name.capitalize()} attacks {target_name}"
                     if id is g.engine.player.id:
                         attack_color = color.player_atk
                     else:
@@ -50,7 +50,7 @@ class DamageSystem(System[DamageCTypes, DamageCs]):
                     death_message = "You died!"
                     death_message_color = color.player_die
                 else:
-                    death_message = f"{name.name} is dead!"
+                    death_message = f"{name} is dead!"
                     death_message_color = color.enemy_die
                     snecs.schedule_for_deletion(id)
 

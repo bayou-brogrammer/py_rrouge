@@ -10,7 +10,3 @@ class Position(RegisteredComponent):
 
     def __iter__(self) -> Iterator[int]:
         return iter([self.x, self.y])
-
-    # def move(self, x: int, y: int) -> None:
-    # self.x = x
-    # self.y = y

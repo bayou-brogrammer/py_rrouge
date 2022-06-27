@@ -38,7 +38,6 @@ class Melee(ActionWithDirection):
             raise game.exceptions.Impossible("Nothing to attack.")
 
         print("Melee action")
-
         snecs.add_component(self.entity.id, WantsToMelee(target=target))
 
 
