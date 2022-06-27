@@ -3,21 +3,13 @@ from __future__ import annotations
 
 import constants
 import g
-import game
-import game.engine
-import game.gamemap
-
-from .spawner import spawn_monster, spawn_player
+from game import entity_factories, gamemap
 
 
 def new_game() -> None:
     """Return a brand new game session as an Engine instance."""
-    gamemap = game.gamemap.GameMap(g.engine, constants.map_width, constants.map_height)
-    player = spawn_player(gamemap, *gamemap.rooms[0].center)
+    g.engine.gamemap = gamemap.GameMap(g.engine, constants.map_width, constants.map_height)
 
-    for room in gamemap.rooms[1:]:
-        spawn_monster(gamemap, *room.center)
-
-    g.engine.gamemap = gamemap
-    g.engine.player = player
-    g.engine.run_systems()
+    player_start = g.engine.gamemap.rooms[0].center
+    g.engine.player = entity_factories.player.spawn(g.engine.gamemap, *player_start)
+    g.engine.update_fov()

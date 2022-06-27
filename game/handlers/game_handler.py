@@ -6,7 +6,7 @@ from typing import Optional
 import tcod
 
 import g
-from game import actions, exceptions, systems
+from game import actions, exceptions
 from game.typing import ActionOrHandler
 
 from .event_handler import EventHandler
@@ -60,21 +60,20 @@ logger = logging.getLogger(__name__)
 
 
 class MainGameEventHandler(EventHandler):
-
-    systems = [systems.FovSystem()]
-
     def handle_action(self, action: actions.Action) -> EventHandler:
         """Handle actions returned from event methods."""
 
         try:
             action.perform()
-            g.engine.run_systems()
         except exceptions.Impossible as exc:
             logger.fatal(exc.args[0])
             return self
 
-        # monster turn
-        # g.engine.run_systems()
+        # g.engine.handle_enemy_turns()
+        # g.engine.update_fov()
+
+        # if not g.engine.player.is_alive:
+        #     return GameOverEventHandler()
 
         return self
 

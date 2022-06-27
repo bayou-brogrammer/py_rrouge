@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Any, Iterator, List, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, List, Optional, Tuple
 
 import numpy as np
 import tcod
 from numpy.typing import NDArray
 
 from constants import SHROUD
+from game.entity import Actor, Entity
 from game.node import Node
 from game.tiles import TileType
 
@@ -36,21 +37,10 @@ class GameMap(Node):
         self.tiles: NDArray[np.uint8] = np.zeros((width, height), dtype=np.uint8, order="F")
 
         self.memory: NDArray[Any] = np.full((width, height), fill_value=SHROUD, order="F")
-
-        a = np.array([])
-        b = np.empty([width * height, a.shape[0]])
-        self.test = b[:] = a
-
         self.visible = np.full((width, height), fill_value=False, order="F")  # Tiles the player can currently see
         self.explored = np.full((width, height), fill_value=False, order="F")  # Tiles the player has seen before
 
         self.generate_map()
-
-    def clear(self) -> None:
-        """Clear the map of all tiles."""
-        a = np.array([])
-        b = np.empty([self.width * self.height, a.shape[0]])
-        self.test = b[:] = a
 
     def __tunnel_between__(self, start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
         """Return an L-shaped tunnel between these two points."""
@@ -93,6 +83,33 @@ class GameMap(Node):
             # Finally, append the new room to the list.
             self.rooms.append(new_room)
 
+    @property
+    def entities(self) -> Iterator[Entity]:
+        yield from self.get_children(Entity)
+
+    @property
+    def actors(self) -> Iterator[Actor]:
+        yield from self.get_children(Actor)
+
+    @property
+    def gamemap(self) -> GameMap:
+        return self
+
+    def get_blocking_entity_at(self, x: int, y: int) -> Optional[Entity]:
+        """Returns an entity that blocks the position at x,y if one exists, otherwise returns None."""
+        for entity in self.entities:
+            if entity.blocks_movement and entity.x == x and entity.y == y:
+                return entity
+
+        return None
+
+    def get_actor_at_location(self, x: int, y: int) -> Optional[Actor]:
+        for actor in self.entities:
+            if actor.blocks_movement and actor.x == x and actor.y == y and isinstance(actor, Actor):
+                return actor
+
+        return None
+
     def in_bounds(self, x: int, y: int) -> bool:
-        """check if the given coordinates are within the bounds of the map"""
+        """Return True if x and y are inside of the bounds of this map."""
         return 0 <= x < self.width and 0 <= y < self.height

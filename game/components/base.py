@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+import game.engine
+import game.entity
+import game.gamemap
+from game.node import Node
+
+
+class BaseComponent(Node):
+    @property
+    def entity(self) -> game.entity.Actor:
+        """Owning entity instance."""
+        return self.get_parent(game.entity.Actor)
+
+    @property
+    def owner(self) -> game.entity.Actor:
+        """Owning entity instance."""
+        return self.get_parent(game.entity.Actor)
+
+    @property
+    def gamemap(self) -> game.gamemap.GameMap:
+        return self.get_parent(game.gamemap.GameMap)
+
+    @property
+    def engine(self) -> game.engine.Engine:
+        return self.get_parent(game.engine.Engine)

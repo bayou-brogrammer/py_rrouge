@@ -11,8 +11,8 @@ from game.typing import ActionOrHandler
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return the next active event handler."""
-
         state = self.dispatch(event)
+
         if isinstance(state, BaseEventHandler):
             return state
 
@@ -20,9 +20,7 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
         return self
 
     def on_render(self, console: tcod.Console) -> None:
-        """Render method for the event handler."""
         raise NotImplementedError()
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[ActionOrHandler]:
-        """Handle a quit event."""
         raise SystemExit()

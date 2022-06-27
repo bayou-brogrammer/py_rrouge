@@ -1,36 +1,61 @@
 #!/usr/bin/env python3
-
+import io
 import logging
 import sys
+import traceback
 import warnings
+from pathlib import Path
 
 import tcod
 
-import constants
 import g
+import game.color
 import game.engine
+import game.entity
 import game.exceptions
 import game.handlers
-
-logger = logging.getLogger(__name__)
+from game.typing import EventHandlerLike
 
 
 def main() -> None:
-    tileset = tcod.tileset.load_tilesheet(
-        constants.tileset, constants.tileset_columns, constants.tileset_rows, constants.charmap
-    )
+    screen_width = 80
+    screen_height = 50
+
+    tileset = tcod.tileset.load_tilesheet(Path("data/dejavu16x16_gs_tc.png"), 32, 8, tcod.tileset.CHARMAP_TCOD)
+    event_handler: EventHandlerLike = game.handlers.MainMenuHandler()
 
     with tcod.context.new(
-        vsync=True,
+        columns=screen_width,
+        rows=screen_height,
         tileset=tileset,
-        title=constants.title,
-        rows=constants.screen_height,
-        columns=constants.screen_width,
-        renderer=tcod.RENDERER_OPENGL2,  # OpenGL Bonks out and fallsback to tcod.RENDERER_SDL2
-    ) as context:
+        title="Yet Another Roguelike Tutorial",
+        vsync=True,
+    ) as g.context:
+        root_console = tcod.Console(screen_width, screen_height, order="F")
+        try:
+            while True:
+                root_console.clear()
+                event_handler.on_render(console=root_console)
+                g.context.present(root_console)
 
-        g.engine = game.engine.Engine(context=context)
-        g.engine.run_game()
+                try:
+                    for event in tcod.event.wait():
+                        g.context.convert_event(event)
+                        event_handler = event_handler.handle_events(event)
+                except Exception:  # Handle exceptions in game.
+                    traceback.print_exc()  # Print error to stderr.
+                    # Then print the error to the message log.
+                    if isinstance(event_handler, game.handlers.EventHandler):
+                        print("error :)")
+                        # g.engine.message_log.add_message(traceback.format_exc(), game.color.error)
+        except game.exceptions.QuitWithoutSaving:
+            raise SystemExit()
+        except SystemExit:  # Save and quit.
+            io.save_game(Path("savegame.sav"))
+            raise
+        except BaseException:  # Save on any other error.
+            io.save_game(Path("savegame.sav"))
+            raise
 
 
 if __name__ == "__main__":

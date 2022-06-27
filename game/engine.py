@@ -2,97 +2,44 @@ from __future__ import annotations
 
 import logging
 import random
-import traceback
-from enum import Enum, auto
-from typing import List
 
 import tcod
 
-import constants
+import game.entity
 import game.exceptions
-import game.handlers
-from game import ecs, systems
-from game.entity import Actor
-from game.gamemap import GameMap
+import game.gamemap
+from game.components.ai import BaseAI
 from game.node import Node
-from game.typing import EventHandlerLike
 
 logger = logging.getLogger(__name__)
 
 
-class TurnState(Enum):
-    PreRun = auto()
-    AwaitingInput = auto()
-    PlayerTurn = auto()
-    MonsterTurn = auto()
-
-
 class Engine(Node):
-    """Game Engine that powers the world"""
-
-    gamemap: GameMap
+    gamemap: game.gamemap.GameMap
+    player: game.entity.Actor
     rng: random.Random
     mouse_location = (0, 0)
 
-    player: Actor  # Entity ID
-    turn_state: TurnState = TurnState.PreRun
-    systems: List[ecs.System]  # type: ignore
-
-    def __init__(self, context: tcod.context.Context) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.rng = random.Random()
 
-        self.context = context
-        self.event_handler: EventHandlerLike = game.handlers.MainMenuHandler()
-        self.root_console = tcod.Console(constants.screen_width, constants.screen_height, order="F")
+    def handle_enemy_turns(self) -> None:
+        logger.info("Enemy turn.")
+        for entity in set(self.gamemap.actors) - {self.player}:
+            ai = entity.try_get(BaseAI)
+            if ai:
+                try:
+                    ai.perform()
+                except game.exceptions.Impossible:
+                    pass  # Ignore impossible action exceptions from AI.
 
-        self.systems = [systems.FovSystem(), systems.AISystem()]
-
-    def run_game(self) -> None:
-        try:
-            while True:
-                self.tick()
-        except game.exceptions.QuitWithoutSaving:
-            raise SystemExit()
-        except SystemExit:  # Save and quit.
-            # game_io.save_game(Path("savegame.sav"))
-            raise
-        except BaseException:  # Save on any other error.
-            # game_io.save_game(Path("savegame.sav"))
-            raise
-
-    def __transition_state__(self) -> None:
-        match self.turn_state:
-            case TurnState.PreRun:
-                self.turn_state = TurnState.PlayerTurn
-            case TurnState.PlayerTurn:
-                self.turn_state = TurnState.MonsterTurn
-            case TurnState.MonsterTurn:
-                self.turn_state = TurnState.PlayerTurn
-
-    def run_systems(self) -> None:
-        for system in self.systems:
-            system.process()
-
-        self.__transition_state__()
-
-    def render(self) -> None:
-        """Render the game."""
-        self.root_console.clear()
-        self.event_handler.on_render(console=self.root_console)
-        self.context.present(self.root_console)
-
-    def tick(self) -> None:
-        self.render()
-
-        try:
-            for event in tcod.event.wait():
-                self.context.convert_event(event)
-                self.event_handler = self.event_handler.handle_events(event)
-        except Exception:  # Handle exceptions in game.
-            traceback.print_exc()  # Print error to stderr.
-
-            # Then print the error to the message log.
-            if isinstance(self.event_handler, game.handlers.EventHandler):
-                logger.debug("Stack Error: :)")
-            #     g.engine.message_log.add_message(traceback.format_exc(), game.color.error)
+    def update_fov(self) -> None:
+        """Recompute the visible area based on the players point of view."""
+        self.gamemap.visible[:] = tcod.map.compute_fov(
+            self.gamemap.tiles,
+            (self.player.x, self.player.y),
+            radius=8,
+            algorithm=tcod.FOV_SYMMETRIC_SHADOWCAST,
+        )
+        # If a tile is currently "visible" it will also be marked as "explored".
+        self.gamemap.explored |= self.gamemap.visible
