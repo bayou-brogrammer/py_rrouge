@@ -5,5 +5,5 @@ class Player(RegisteredComponent):
     ...
 
 
-class Monster(RegisteredComponent):
+class AI(RegisteredComponent):
     ...

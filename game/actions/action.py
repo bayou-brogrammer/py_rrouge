@@ -1,3 +1,6 @@
+from typing import Tuple
+
+from game.components.position import Position
 from game.entity import Actor
 
 
@@ -5,6 +8,10 @@ class Action:
     def __init__(self, entity: Actor) -> None:
         super().__init__()
         self.entity = entity  # The object performing the action.
+
+    # @property
+    # def engine(self) -> game.engine.Engine:
+    #     return self.entity.get_parent(game.engine.Engine)
 
     def perform(self) -> None:
         """Perform this action now.
@@ -20,10 +27,11 @@ class ActionWithDirection(Action):
         self.dx = dx
         self.dy = dy
 
-    # @property
-    # def dest_xy(self) -> Tuple[int, int]:
-    #     """Returns this actions destination."""
-    #     return self.entity.x + self.dx, self.entity.y + self.dy
+    @property
+    def dest_xy(self) -> Tuple[int, int]:
+        """Returns this actions destination."""
+        pos = self.entity.get_component(Position)
+        return pos.x + self.dx, pos.y + self.dy
 
     # @property
     # def blocking_entity(self) -> Optional[game.entity.Entity]:
@@ -37,3 +45,8 @@ class ActionWithDirection(Action):
 
     def perform(self) -> None:
         raise NotImplementedError()
+
+
+class Wait(Action):
+    def perform(self) -> None:
+        pass

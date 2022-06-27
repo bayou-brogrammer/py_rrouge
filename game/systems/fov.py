@@ -7,11 +7,11 @@ from game.components.fov import FieldOfView
 from game.components.position import Position
 from game.ecs import System
 
-DrawCTypes = Tuple[Type[Position], Type[FieldOfView]]
-DrawCs = Tuple[Position, FieldOfView]
+FovCTypes = Tuple[Type[Position], Type[FieldOfView]]
+FovCs = Tuple[Position, FieldOfView]
 
 
-class FovSystem(System[DrawCTypes, DrawCs]):
+class FovSystem(System[FovCTypes, FovCs]):
     def process(self) -> None:
         for id, (pos, fov) in self.query():
             if fov.dirty:

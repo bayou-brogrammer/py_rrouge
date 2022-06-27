@@ -4,13 +4,14 @@ import logging
 import random
 import traceback
 from enum import Enum, auto
+from typing import List
 
 import tcod
 
 import constants
 import game.exceptions
 import game.handlers
-from game import systems
+from game import ecs, systems
 from game.entity import Actor
 from game.gamemap import GameMap
 from game.node import Node
@@ -35,6 +36,7 @@ class Engine(Node):
 
     player: Actor  # Entity ID
     turn_state: TurnState = TurnState.PreRun
+    systems: List[ecs.System]  # type: ignore
 
     def __init__(self, context: tcod.context.Context) -> None:
         super().__init__()
@@ -44,7 +46,7 @@ class Engine(Node):
         self.event_handler: EventHandlerLike = game.handlers.MainMenuHandler()
         self.root_console = tcod.Console(constants.screen_width, constants.screen_height, order="F")
 
-        self.systems = [systems.FovSystem()]
+        self.systems = [systems.FovSystem(), systems.AISystem()]
 
     def run_game(self) -> None:
         try:

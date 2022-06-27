@@ -1,5 +1,5 @@
 # flake8: noqa
-from .action import Action
+from .action import Action, Wait
 from .bump import Bump, Melee, Move
 
 __all__ = [
@@ -7,4 +7,5 @@ __all__ = [
     "Move",
     "Melee",
     "Bump",
+    "Wait",
 ]

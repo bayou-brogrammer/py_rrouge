@@ -1,5 +1,5 @@
 # flake8: noqa
-from .entity import Monster, Player
+from .entity import AI, Player
 from .fov import FieldOfView
 from .position import Position
 from .renderable import Renderable
@@ -7,7 +7,7 @@ from .renderable import Renderable
 __all__ = [
     # Entity Components
     "Player",
-    "Monster",
+    "AI",
     # Components
     "Position",
     "Renderable",

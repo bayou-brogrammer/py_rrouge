@@ -37,10 +37,20 @@ class GameMap(Node):
 
         self.memory: NDArray[Any] = np.full((width, height), fill_value=SHROUD, order="F")
 
+        a = np.array([])
+        b = np.empty([width * height, a.shape[0]])
+        self.test = b[:] = a
+
         self.visible = np.full((width, height), fill_value=False, order="F")  # Tiles the player can currently see
         self.explored = np.full((width, height), fill_value=False, order="F")  # Tiles the player has seen before
 
         self.generate_map()
+
+    def clear(self) -> None:
+        """Clear the map of all tiles."""
+        a = np.array([])
+        b = np.empty([self.width * self.height, a.shape[0]])
+        self.test = b[:] = a
 
     def __tunnel_between__(self, start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
         """Return an L-shaped tunnel between these two points."""
