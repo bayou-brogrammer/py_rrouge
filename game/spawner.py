@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from game import color
-from game.components import AI, FieldOfView, Player, Position, Renderable
+from game.components import AI, FieldOfView, Name, Player, Position, Renderable
 from game.components.entity import BlocksTile
 from game.components.stats import CombatStats
 from game.entity import Actor
@@ -18,6 +18,7 @@ def spawn_player(gamemap: GameMap, x: int, y: int) -> Actor:
             Renderable("@", color.yellow),
             FieldOfView(gamemap, 8),
             CombatStats(hp=30, max_hp=30, defense=2, power=5),
+            Name("Player"),
         ]
     )
 
@@ -32,5 +33,6 @@ def spawn_monster(gamemap: GameMap, x: int, y: int) -> Actor:
             FieldOfView(gamemap, 6),
             BlocksTile(),
             CombatStats(hp=16, max_hp=16, defense=1, power=4),
+            Name("Goblin"),
         ]
     )

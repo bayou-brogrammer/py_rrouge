@@ -66,6 +66,22 @@ def typed_compiled_query(
     ...
 
 
+@overload
+def typed_compiled_query(
+    component_types: Tuple[Type[T1], Type[T2], Type[T3]],
+    world: "World" = ...,
+) -> Callable[[], Iterator[Tuple[EntityID, Tuple[T1, T2, T3]]]]:
+    ...
+
+
+@overload
+def typed_compiled_query(
+    component_types: Tuple[Type[T1], Type[T2], Type[T3], Type[T4]],
+    world: "World" = ...,
+) -> Callable[[], Iterator[Tuple[EntityID, Tuple[T1, T2, T3, T4]]]]:
+    ...
+
+
 def typed_compiled_query(component_types, world=default_world):  # type: ignore
     query = Query(component_types, world).compile()
 

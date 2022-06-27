@@ -4,6 +4,7 @@ from __future__ import annotations
 import constants
 import g
 import game
+import game.color
 import game.engine
 import game.gamemap
 
@@ -21,3 +22,5 @@ def new_game() -> None:
     g.engine.turn_state = game.engine.TurnState.PreRun
     g.engine.gamemap = gamemap
     g.engine.player = player
+
+    g.engine.message_log.add_message("Hello and welcome, adventurer, to yet another dungeon!", game.color.welcome_text)

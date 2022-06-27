@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Collection, Optional, TypeVar
 
-from game.components.fov import FieldOfView
-from game.components.position import Position
+from game.components import CombatStats, FieldOfView, Position
 from game.ecs import EntityManager
 from game.node import Node
 
@@ -33,3 +32,12 @@ class Actor(Entity):
     @property
     def fov(self) -> Optional[FieldOfView]:
         return self.try_get_component(FieldOfView)
+
+    @property
+    def stats(self) -> Optional[CombatStats]:
+        return self.try_get_component(CombatStats)
+
+    @property
+    def is_alive(self) -> bool:
+        """Returns True as long as this actor can perform actions."""
+        return self.stats is not None and self.stats.hp > 0

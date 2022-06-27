@@ -18,7 +18,7 @@ class EventHandler(BaseEventHandler):
 
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event, perform any actions, then return the next active event handler."""
-        # from .game_handler import MainGameEventHandler
+        # from .game_handler import GameOverEventHandler
 
         action_or_state = self.dispatch(event)
         if isinstance(action_or_state, EventHandler):
@@ -27,7 +27,6 @@ class EventHandler(BaseEventHandler):
         if isinstance(action_or_state, Action) and self.handle_action(action_or_state):
             # A valid action was performed.
             return self  # Return to the main handler.
-            # return MainGameEventHandler()  # Return to the main handler.
 
         return self
 
@@ -50,13 +49,10 @@ class EventHandler(BaseEventHandler):
         match g.engine.turn_state:
             case TurnState.PreRun:
                 g.engine.run_systems()
-                g.engine.turn_state = TurnState.PlayerTurn
             case TurnState.PlayerTurn:
                 g.engine.run_systems()
-                g.engine.turn_state = TurnState.MonsterTurn
             case TurnState.MonsterTurn:
                 g.engine.run_systems()
-                g.engine.turn_state = TurnState.PlayerTurn
 
         rendering.render_map(console)
-        # game.rendering.render_ui(console, self.engine)
+        rendering.render_ui(console, g.engine)

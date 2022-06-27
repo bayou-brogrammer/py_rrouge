@@ -3,10 +3,13 @@ from __future__ import annotations
 import numpy as np
 import tcod
 
+import constants
 import g
+import game.engine
+import game.gamemap
+import game.render_functions
 from game import ecs
-from game.components.position import Position
-from game.components.renderable import Renderable
+from game.components import CombatStats, Position, Renderable
 from game.tiles import tile_graphics
 
 # RENDERABLE_QUERY = Query([Position, Renderable]).compile()
@@ -156,3 +159,26 @@ def render_map(console: tcod.Console) -> None:
         console.print(p.x, p.y, r.char, r.color)
 
     visible.choose((gamemap.memory, light), out=gamemap.memory)
+
+
+def render_ui(console: tcod.Console, engine: game.engine.Engine) -> None:
+    UI_WIDTH = constants.ui_width
+    UI_LEFT = console.width - UI_WIDTH
+    LOG_HEIGHT = console.height - 8
+
+    engine.message_log.render(
+        console=console, x=UI_LEFT, y=console.height - LOG_HEIGHT, width=UI_WIDTH, height=LOG_HEIGHT
+    )
+    console.draw_rect(UI_LEFT, 0, UI_WIDTH, 2, 0x20, (0xFF, 0xFF, 0xFF), (0, 0, 0))
+
+    stats = engine.player.get_component(CombatStats)
+    game.render_functions.render_bar(
+        console=console,
+        x=UI_LEFT,
+        y=0,
+        current_value=stats.hp,
+        maximum_value=stats.max_hp,
+        total_width=UI_WIDTH,
+    )
+
+    game.render_functions.render_names_at_mouse_location(console=console, x=UI_LEFT, y=1, engine=engine)

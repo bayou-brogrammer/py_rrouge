@@ -13,8 +13,8 @@ class Action:
         self.entity = entity  # The object performing the action.
 
     # @property
-    # def engine(self) -> game.engine.Engine:
-    #     return self.entity.get_parent(game.engine.Engine)
+    # def engine(self) -> Engine:
+    #     return self.entity.get_parent(Engine)
 
     def perform(self) -> None:
         """Perform this action now.
@@ -44,7 +44,7 @@ class ActionWithDirection(Action):
     @property
     def target_actor(self) -> Optional[EntityID]:
         """Return the actor at this actions destination."""
-        return g.engine.gamemap.get_actor_at_location(*self.dest_xy)
+        return g.engine.gamemap.get_target_at_location(*self.dest_xy)
 
     def perform(self) -> None:
         raise NotImplementedError()

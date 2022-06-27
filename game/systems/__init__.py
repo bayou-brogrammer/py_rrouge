@@ -1,9 +1,9 @@
 # flake8: noqa
 from .ai import AISystem
+from .end_turn import EndTurnSystem
 from .fov import FovSystem
 from .indexing import IndexingSystem
 from .melee_combat import DamageSystem, MeleeCombatSystem
-from .player_input import PlayerInputSystem
 
 __all__ = [
     "FovSystem",
@@ -11,5 +11,5 @@ __all__ = [
     "IndexingSystem",
     "MeleeCombatSystem",
     "DamageSystem",
-    "PlayerInputSystem",
+    "EndTurnSystem",
 ]

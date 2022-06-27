@@ -99,7 +99,7 @@ class GameMap(Node):
 
     def is_blocked(self, x: int, y: int) -> bool:
         """Returns an entity that blocks the position at x,y if one exists, otherwise returns None."""
-        return self.blocked[x, y]
+        return self.blocked[x, y]  # type: ignore
 
     def populate_blocked(self) -> None:
         for idx, tile in np.ndenumerate(self.tiles):
@@ -110,7 +110,7 @@ class GameMap(Node):
         for content in self.tile_content:
             content.clear()
 
-    def get_actor_at_location(self, x: int, y: int) -> Optional[EntityID]:
+    def get_target_at_location(self, x: int, y: int) -> Optional[EntityID]:
         """Return the actor at the given location."""
         for entity in self.tile_content[self.idx(x, y)]:
             if ecs.try_entity_component(entity, CombatStats):

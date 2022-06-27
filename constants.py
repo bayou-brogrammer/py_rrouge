@@ -13,11 +13,12 @@ version = 0.1
 title = f"PyRRouge {version}"
 title_extended = "<Insert Cool Title>: A Roguelike Venture!"
 
-tileset = "data/16x16-RogueYun-AgmEdit.png"
-tileset_rows = 16
-tileset_columns = 16
-tileset_bounds = (16, 16)  # (columns, rows)
-charmap = tcod.tileset.CHARMAP_CP437
+tileset = "data/dejavu16x16_gs_tc.png"
+# tileset = "data/16x16-RogueYun-AgmEdit.png"
+tileset_rows = 8
+tileset_columns = 32
+charmap = tcod.tileset.CHARMAP_TCOD
+# charmap = tcod.tileset.CHARMAP_CP437
 bg_img = "data/menu_background.png"
 save_file = "savegame.sav"
 
@@ -33,6 +34,7 @@ screen_height = 50
 
 # Main Menu
 menu_width = 24
+ui_width = 30
 
 """ Panels """
 # Message Panel

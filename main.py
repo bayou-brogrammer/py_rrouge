@@ -12,8 +12,6 @@ import game.engine
 import game.exceptions
 import game.handlers
 
-logger = logging.getLogger(__name__)
-
 
 def main() -> None:
     tileset = tcod.tileset.load_tilesheet(
@@ -29,7 +27,7 @@ def main() -> None:
         renderer=tcod.RENDERER_OPENGL2,  # OpenGL Bonks out and fallsback to tcod.RENDERER_SDL2
     ) as g.context:
 
-        g.engine = game.engine.Engine(context=g.context)
+        g.engine = game.engine.Engine()
         g.engine.run_game()
 
 

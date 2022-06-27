@@ -7,6 +7,11 @@ from snecs.typedefs import EntityID
 from game.ecs.component import try_entity_component
 
 
+class Name(RegisteredComponent):
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+
 class CombatStats(RegisteredComponent):
     def __init__(self, hp: int, max_hp: int, power: int, defense: int) -> None:
         self.hp = hp
