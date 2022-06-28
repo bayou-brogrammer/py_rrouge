@@ -1,21 +1,22 @@
 from __future__ import annotations
 
-# import traceback
 from pathlib import Path
 from typing import Optional
 
 import tcod
 from PIL import Image  # type: ignore
 
-import constants
+import game.action
+import game.actions
 import game.color
+import game.constants
+import game.exceptions
 import game.setup
 
-from .base_handler import BaseEventHandler
-from .game_handler import MainGameEventHandler
+from .base_event import BaseEventHandler
 
 # Load the background image.  Pillow returns an object convertable into a NumPy array.
-background_image = Image.open(Path(constants.bg_img))
+background_image = Image.open(Path(game.constants.bg_img))
 
 
 class MainMenuHandler(BaseEventHandler):
@@ -25,6 +26,8 @@ class MainMenuHandler(BaseEventHandler):
         super().__init__()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        from .game_handler import MainGameEventHandler
+
         key = event.sym
 
         match key:
@@ -42,14 +45,14 @@ class MainMenuHandler(BaseEventHandler):
         console.print(
             console.width // 2,
             console.height // 2 - 4,
-            constants.title_extended,
+            game.constants.title_extended,
             fg=game.color.menu_title,
             alignment=tcod.CENTER,
         )
         console.print(
             console.width // 2,
             console.height - 2,
-            f"By {constants.author}",
+            f"By {game.constants.author}",
             fg=game.color.menu_title,
             alignment=tcod.CENTER,
         )
@@ -58,7 +61,7 @@ class MainMenuHandler(BaseEventHandler):
             console.print(
                 console.width // 2,
                 console.height // 2 - 2 + i,
-                text.ljust(constants.menu_width),
+                text.ljust(game.constants.menu_width),
                 fg=game.color.menu_text,
                 bg=game.color.black,
                 alignment=tcod.CENTER,

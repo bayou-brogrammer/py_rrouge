@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import g
 import game.color
 import game.exceptions
 from game.action import Action, ActionWithDirection
@@ -20,11 +21,11 @@ class Move(ActionWithDirection):
         dest_x = self.entity.x + self.dx
         dest_y = self.entity.y + self.dy
 
-        if not self.engine.gamemap.in_bounds(dest_x, dest_y):
+        if not g.engine.gamemap.in_bounds(dest_x, dest_y):
             raise game.exceptions.Impossible("That way is blocked.")  # Destination is out of bounds.
-        if not self.engine.gamemap.tiles[dest_x, dest_y]:
+        if not g.engine.gamemap.tiles[dest_x, dest_y]:
             raise game.exceptions.Impossible("That way is blocked.")  # Destination is blocked by a tile.
-        if self.engine.gamemap.get_blocking_entity_at(dest_x, dest_y):
+        if g.engine.gamemap.get_blocking_entity_at(dest_x, dest_y):
             raise game.exceptions.Impossible("That way is blocked.")  # Destination is blocked by an entity.
 
         self.entity.x, self.entity.y = dest_x, dest_y

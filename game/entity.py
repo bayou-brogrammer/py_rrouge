@@ -6,7 +6,7 @@ from typing import Optional, Tuple, Type, TypeVar
 
 import game.components.ai
 import game.components.fighter
-import game.gamemap
+import game.game_map
 import game.render_order
 from game.node import Node
 
@@ -36,8 +36,8 @@ class Entity(Node):
         self.render_order = render_order
 
     @property
-    def gamemap(self) -> game.gamemap.GameMap:
-        return self.get_parent(game.gamemap.GameMap)
+    def gamemap(self) -> game.game_map.GameMap:
+        return self.get_parent(game.game_map.GameMap)
 
     def spawn(self: T, gamemap: Node, x: int, y: int) -> T:
         """Spawn a copy of this instance at the given location."""

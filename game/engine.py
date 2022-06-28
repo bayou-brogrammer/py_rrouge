@@ -7,7 +7,7 @@ import tcod
 
 import game.entity
 import game.exceptions
-import game.gamemap
+import game.game_map
 from game.components.ai import BaseAI
 from game.node import Node
 
@@ -15,13 +15,15 @@ logger = logging.getLogger(__name__)
 
 
 class Engine(Node):
-    gamemap: game.gamemap.GameMap
+    gamemap: game.game_map.GameMap
+    game_world: game.game_map.GameWorld
     player: game.entity.Actor
     rng: random.Random
     mouse_location = (0, 0)
 
     def __init__(self) -> None:
         super().__init__()
+        self.rng = random.Random()
 
     def handle_enemy_turns(self) -> None:
         logger.info("Enemy turn.")
@@ -41,5 +43,6 @@ class Engine(Node):
             radius=8,
             algorithm=tcod.FOV_SYMMETRIC_SHADOWCAST,
         )
+
         # If a tile is currently "visible" it will also be marked as "explored".
         self.gamemap.explored |= self.gamemap.visible

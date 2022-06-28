@@ -4,7 +4,7 @@ from typing import Optional
 
 import tcod
 
-from game.actions import Action
+import game.action
 from game.typing import ActionOrHandler
 
 
@@ -16,7 +16,7 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
         if isinstance(state, BaseEventHandler):
             return state
 
-        assert not isinstance(state, Action), f"{self!r} can not handle actions."
+        assert not isinstance(state, game.action.Action), f"{self!r} can not handle actions."
         return self
 
     def on_render(self, console: tcod.Console) -> None:

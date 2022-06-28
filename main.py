@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import io
 import logging
 import sys
 import traceback
@@ -9,11 +8,9 @@ from pathlib import Path
 import tcod
 
 import g
-import game.color
-import game.engine
-import game.entity
 import game.exceptions
-import game.handlers
+import game.input_handlers
+import game_io
 from game.typing import EventHandlerLike
 
 
@@ -22,7 +19,7 @@ def main() -> None:
     screen_height = 50
 
     tileset = tcod.tileset.load_tilesheet(Path("data/dejavu16x16_gs_tc.png"), 32, 8, tcod.tileset.CHARMAP_TCOD)
-    event_handler: EventHandlerLike = game.handlers.MainMenuHandler()
+    event_handler: EventHandlerLike = game.input_handlers.MainMenuHandler()
 
     with tcod.context.new(
         columns=screen_width,
@@ -45,16 +42,16 @@ def main() -> None:
                 except Exception:  # Handle exceptions in game.
                     traceback.print_exc()  # Print error to stderr.
                     # Then print the error to the message log.
-                    if isinstance(event_handler, game.handlers.EventHandler):
+                    if isinstance(event_handler, game.input_handlers.EventHandler):
                         print("error :)")
                         # g.engine.message_log.add_message(traceback.format_exc(), game.color.error)
         except game.exceptions.QuitWithoutSaving:
             raise SystemExit()
         except SystemExit:  # Save and quit.
-            io.save_game(Path("savegame.sav"))
+            game_io.save_game(Path("savegame.sav"))
             raise
         except BaseException:  # Save on any other error.
-            io.save_game(Path("savegame.sav"))
+            game_io.save_game(Path("savegame.sav"))
             raise
 
 

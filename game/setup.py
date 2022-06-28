@@ -1,15 +1,30 @@
 """Handle the loading and initialization of game sessions."""
 from __future__ import annotations
 
-import constants
 import g
-from game import entity_factories, gamemap
+import game.constants
+import game.engine
+import game.entity_factories
+import game.game_map
 
 
-def new_game() -> None:
+def new_game() -> game.engine.Engine:
     """Return a brand new game session as an Engine instance."""
-    g.engine.gamemap = gamemap.GameMap(g.engine, constants.map_width, constants.map_height)
+    engine = game.engine.Engine()
+    engine.game_world = game.game_map.GameWorld(
+        engine=engine,
+        max_rooms=game.constants.max_rooms,
+        room_min_size=game.constants.room_min_size,
+        room_max_size=game.constants.room_max_size,
+        map_width=game.constants.map_width,
+        map_height=game.constants.map_height,
+    )
+    engine.game_world.generate_floor()
 
-    player_start = g.engine.gamemap.rooms[0].center
-    g.engine.player = entity_factories.player.spawn(g.engine.gamemap, *player_start)
-    g.engine.update_fov()
+    engine.player = game.entity_factories.player.spawn(engine.gamemap, *engine.gamemap.player_start)
+    engine.update_fov()
+
+    # engine.message_log.add_message("Hello and welcome, adventurer, to yet another dungeon!", game.color.welcome_text)
+
+    g.engine = engine
+    return engine

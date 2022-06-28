@@ -5,11 +5,11 @@ from typing import Optional
 import tcod
 
 import g
-from game import rendering
-from game.actions import Action
+import game.action
+import game.rendering
 from game.typing import ActionOrHandler
 
-from .base_handler import BaseEventHandler
+from .base_event import BaseEventHandler
 
 
 class EventHandler(BaseEventHandler):
@@ -20,13 +20,13 @@ class EventHandler(BaseEventHandler):
         if isinstance(action_or_state, EventHandler):
             return action_or_state
 
-        if isinstance(action_or_state, Action) and self.handle_action(action_or_state):
+        if isinstance(action_or_state, game.action.Action) and self.handle_action(action_or_state):
             return self
             # return MainGameEventHandler()  # Return to the main handler.
 
         return self
 
-    def handle_action(self, action: Action) -> BaseEventHandler:
+    def handle_action(self, action: game.action.Action) -> BaseEventHandler:
         return self
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[ActionOrHandler]:
@@ -37,5 +37,5 @@ class EventHandler(BaseEventHandler):
             g.engine.mouse_location = event.tile.x, event.tile.y
 
     def on_render(self, console: tcod.Console) -> None:
-        rendering.render_map(console, g.engine.gamemap)
+        game.rendering.render_map(console, g.engine.gamemap)
         # game.rendering.render_ui(console, self.engine)

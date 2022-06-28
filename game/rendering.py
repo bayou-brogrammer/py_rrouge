@@ -4,20 +4,16 @@ import numpy as np
 import tcod
 
 import g
-from game import gamemap
+import game.game_map
 from game.tiles import tile_graphics
 
 
-def render_map(console: tcod.Console, gamemap: gamemap.GameMap) -> None:
-    """Draw Map"""
-    gamemap = g.engine.gamemap
-
+def render_map(console: tcod.Console, gamemap: game.game_map.GameMap) -> None:
     # The default graphics are of tiles that are visible.
     light = tile_graphics[gamemap.tiles]
 
     # Apply effects to create a darkened map of tile graphics.
     dark = gamemap.memory.copy()
-    # dark = light.copy()
     dark["fg"] //= 2
     dark["bg"] //= 8
 
@@ -33,7 +29,7 @@ def render_map(console: tcod.Console, gamemap: gamemap.GameMap) -> None:
 
     # If a tile is in the "visible" array, then draw it with the "light" colors.
     # If it isn't, but it's in the "explored" array, then draw it with the "dark" colors.
-    # Otherwise, the default graphic is "dark".
+    # Otherwise, the default graphic is "SHROUD".
     console.rgb[0 : gamemap.width, 0 : gamemap.height] = np.select(
         condlist=[visible, gamemap.explored],
         choicelist=[light, dark],
@@ -41,7 +37,7 @@ def render_map(console: tcod.Console, gamemap: gamemap.GameMap) -> None:
     )
 
     for entity in sorted(gamemap.entities, key=lambda x: x.render_order.value):
-        if not visible[entity.x, entity.y]:
+        if not gamemap.visible[entity.x, entity.y]:
             continue  # Skip entities that are not in the FOV.
         console.print(entity.x, entity.y, entity.char, fg=entity.color)
 

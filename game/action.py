@@ -1,28 +1,27 @@
-from typing import Optional, Tuple
+from __future__ import annotations
 
-from game.engine import Engine
-from game.entity import Actor, Entity
+from typing import TYPE_CHECKING, Optional, Tuple
+
+import g
+
+if TYPE_CHECKING:
+    import game.entity
 
 
 class Action:
-    def __init__(self, entity: Actor) -> None:
+    def __init__(self, entity: game.entity.Actor) -> None:
         super().__init__()
         self.entity = entity  # The object performing the action.
 
-    @property
-    def engine(self) -> Engine:
-        return self.entity.get_parent(Engine)
-
     def perform(self) -> None:
         """Perform this action now.
-
         This method must be overridden by Action subclasses.
         """
         raise NotImplementedError()
 
 
 class ActionWithDirection(Action):
-    def __init__(self, entity: Actor, dx: int, dy: int):
+    def __init__(self, entity: game.entity.Actor, dx: int, dy: int):
         super().__init__(entity)
 
         self.dx = dx
@@ -34,19 +33,14 @@ class ActionWithDirection(Action):
         return self.entity.x + self.dx, self.entity.y + self.dy
 
     @property
-    def blocking_entity(self) -> Optional[Entity]:
+    def blocking_entity(self) -> Optional[game.entity.Entity]:
         """Return the blocking entity at this actions destination.."""
-        return self.engine.gamemap.get_blocking_entity_at(*self.dest_xy)
+        return g.engine.gamemap.get_blocking_entity_at(*self.dest_xy)
 
     @property
-    def target_actor(self) -> Optional[Entity]:
+    def target_actor(self) -> Optional[game.entity.Actor]:
         """Return the actor at this actions destination."""
-        return self.engine.gamemap.get_actor_at_location(*self.dest_xy)
+        return g.engine.gamemap.get_actor_at_location(*self.dest_xy)
 
     def perform(self) -> None:
         raise NotImplementedError()
-
-
-class Wait(Action):
-    def perform(self) -> None:
-        pass
