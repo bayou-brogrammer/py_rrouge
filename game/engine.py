@@ -2,21 +2,26 @@ from __future__ import annotations
 
 import logging
 import random
+from typing import TYPE_CHECKING
 
 import tcod
 
 import game.entity
 import game.exceptions
 import game.game_map
+import game.message_log
 from game.components.ai import BaseAI
 from game.node import Node
 
 logger = logging.getLogger(__name__)
 
+if TYPE_CHECKING:
+    import game.game_map.game_world
+
 
 class Engine(Node):
     gamemap: game.game_map.GameMap
-    game_world: game.game_map.GameWorld
+    game_world: game.game_map.game_world.GameWorld
     player: game.entity.Actor
     rng: random.Random
     mouse_location = (0, 0)
@@ -24,6 +29,7 @@ class Engine(Node):
     def __init__(self) -> None:
         super().__init__()
         self.rng = random.Random()
+        self.message_log = game.message_log.MessageLog()
 
     def handle_enemy_turns(self) -> None:
         logger.info("Enemy turn.")

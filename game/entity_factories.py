@@ -1,15 +1,15 @@
+import game.color
 from game.components.ai import HostileEnemy
 from game.components.fighter import Fighter
 from game.entity import Actor
 
 player: Actor = Actor(
     char="@",
-    color=(255, 255, 255),
+    color=game.color.yellow,
     name="Player",
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=30, base_defense=1, base_power=2),
 )
-
 orc: Actor = Actor(
     char="o",
     color=(63, 127, 63),

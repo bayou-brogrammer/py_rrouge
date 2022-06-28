@@ -85,8 +85,15 @@ class MainGameEventHandler(EventHandler):
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
             return game.actions.Bump(g.engine.player, dx=dx, dy=dy)
-        elif __debug__ and key == tcod.event.KeySym.F8:
-            g.fullbright = not g.fullbright
+        elif key in WAIT_KEYS:
+            return game.actions.Wait(g.engine.player)
+
+        match key:
+            case tcod.event.K_ESCAPE:
+                raise SystemExit()
+            case tcod.event.KeySym.F8:
+                if __debug__:
+                    g.fullbright = not g.fullbright
 
         return None
 

@@ -43,8 +43,7 @@ def main() -> None:
                     traceback.print_exc()  # Print error to stderr.
                     # Then print the error to the message log.
                     if isinstance(event_handler, game.input_handlers.EventHandler):
-                        print("error :)")
-                        # g.engine.message_log.add_message(traceback.format_exc(), game.color.error)
+                        g.engine.message_log.add_message(traceback.format_exc(), game.color.error)
         except game.exceptions.QuitWithoutSaving:
             raise SystemExit()
         except SystemExit:  # Save and quit.

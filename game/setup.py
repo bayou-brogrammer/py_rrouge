@@ -6,12 +6,13 @@ import game.constants
 import game.engine
 import game.entity_factories
 import game.game_map
+import game.game_map.game_world
 
 
 def new_game() -> game.engine.Engine:
     """Return a brand new game session as an Engine instance."""
     engine = game.engine.Engine()
-    engine.game_world = game.game_map.GameWorld(
+    engine.game_world = game.game_map.game_world.GameWorld(
         engine=engine,
         max_rooms=game.constants.max_rooms,
         room_min_size=game.constants.room_min_size,

@@ -30,6 +30,7 @@ room_max_size = 10
 # Screen
 screen_width = 80
 screen_height = 50
+ui_width = 30
 
 # Main Menu
 menu_width = 24

@@ -4,7 +4,10 @@ import numpy as np
 import tcod
 
 import g
+import game.constants
+import game.engine
 import game.game_map
+import game.render_functions
 from game.tiles import tile_graphics
 
 
@@ -42,3 +45,25 @@ def render_map(console: tcod.Console, gamemap: game.game_map.GameMap) -> None:
         console.print(entity.x, entity.y, entity.char, fg=entity.color)
 
     visible.choose((gamemap.memory, light), out=gamemap.memory)
+
+
+def render_ui(console: tcod.Console, engine: game.engine.Engine) -> None:
+    UI_WIDTH = game.constants.ui_width
+    UI_LEFT = console.width - UI_WIDTH
+    LOG_HEIGHT = console.height - 8
+
+    engine.message_log.render(
+        console=console, x=UI_LEFT, y=console.height - LOG_HEIGHT, width=UI_WIDTH, height=LOG_HEIGHT
+    )
+    console.draw_rect(UI_LEFT, 0, UI_WIDTH, 2, 0x20, (0xFF, 0xFF, 0xFF), (0, 0, 0))
+
+    game.render_functions.render_bar(
+        console=console,
+        x=UI_LEFT,
+        y=0,
+        current_value=engine.player.fighter.hp,
+        maximum_value=engine.player.fighter.max_hp,
+        total_width=UI_WIDTH,
+    )
+
+    game.render_functions.render_names_at_mouse_location(console=console, x=UI_LEFT, y=1, engine=engine)

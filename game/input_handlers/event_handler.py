@@ -15,12 +15,17 @@ from .base_event import BaseEventHandler
 class EventHandler(BaseEventHandler):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event, perform any actions, then return the next active event handler."""
+        from .game_handler import GameOverEventHandler
+
         action_or_state = self.dispatch(event)
 
         if isinstance(action_or_state, EventHandler):
             return action_or_state
 
         if isinstance(action_or_state, game.action.Action) and self.handle_action(action_or_state):
+            if not g.engine.player.is_alive:
+                # The player was killed sometime during or after the action.
+                return GameOverEventHandler()
             return self
             # return MainGameEventHandler()  # Return to the main handler.
 
@@ -38,4 +43,4 @@ class EventHandler(BaseEventHandler):
 
     def on_render(self, console: tcod.Console) -> None:
         game.rendering.render_map(console, g.engine.gamemap)
-        # game.rendering.render_ui(console, self.engine)
+        game.rendering.render_ui(console, g.engine)

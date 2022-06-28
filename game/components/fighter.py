@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import game.entity
-
 from .base import BaseComponent
+
+# import game.entity
 
 
 class Fighter(BaseComponent):
@@ -15,19 +15,21 @@ class Fighter(BaseComponent):
 
     @property
     def defense(self) -> int:
-        return self.base_defense + self.defense_bonus
-
-    # @property
-    # def power(self) -> int:
-    #     return self.base_power + self.power_bonus
+        return self.base_defense
+        # return self.base_defense + self.defense_bonus
 
     @property
-    def defense_bonus(self) -> int:
-        actor = self.get_parent(game.entity.Actor)
-        if actor.equipment:
-            return actor.equipment.defense_bonus
-        else:
-            return 0
+    def power(self) -> int:
+        return self.base_power
+        # return self.base_power + self.power_bonus
+
+    # @property
+    # def defense_bonus(self) -> int:
+    #     actor = self.get_parent(game.entity.Actor)
+    #     if actor.equipment:
+    #         return actor.equipment.defense_bonus
+    #     else:
+    #         return 0
 
     # @property
     # def power_bonus(self) -> int:

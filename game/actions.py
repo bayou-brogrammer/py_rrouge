@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import g
 import game.color
+import game.combat
 import game.exceptions
 from game.action import Action, ActionWithDirection
 
@@ -37,19 +38,19 @@ class Melee(ActionWithDirection):
         if not target:
             raise game.exceptions.Impossible("Nothing to attack.")
 
-        # damage = self.entity.fighter.power - target.fighter.defense
+        damage = self.entity.fighter.power - target.fighter.defense
 
-        # attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
-        # if self.entity is self.engine.player:
-        #     attack_color = game.color.player_atk
-        # else:
-        #     attack_color = game.color.enemy_atk
+        attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
+        if self.entity is g.engine.player:
+            attack_color = game.color.player_atk
+        else:
+            attack_color = game.color.enemy_atk
 
-        # if damage > 0:
-        #     self.engine.message_log.add_message(f"{attack_desc} for {damage} hit points.", attack_color)
-        #     game.combat.apply_damage(target.fighter, damage)
-        # else:
-        #     self.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)
+        if damage > 0:
+            g.engine.message_log.add_message(f"{attack_desc} for {damage} hit points.", attack_color)
+            game.combat.apply_damage(target.fighter, damage)
+        else:
+            g.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)
 
 
 class Bump(ActionWithDirection):

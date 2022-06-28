@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import game.engine
 import game.entity
 import game.game_map
 from game.node import Node
@@ -20,7 +19,3 @@ class BaseComponent(Node):
     @property
     def gamemap(self) -> game.game_map.GameMap:
         return self.get_parent(game.game_map.GameMap)
-
-    @property
-    def engine(self) -> game.engine.Engine:
-        return self.get_parent(game.engine.Engine)
