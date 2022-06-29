@@ -28,11 +28,23 @@ max_monsters_by_floor = [
     (6, 5),
 ]
 
+max_items_by_floor = [
+    (1, 1),
+    (4, 2),
+]
+
 enemy_chances: Dict[int, List[Tuple[game.entity.Entity, int]]] = {
     0: [(game.entity_factories.orc, 80)],
     3: [(game.entity_factories.troll, 15)],
     5: [(game.entity_factories.troll, 30)],
     7: [(game.entity_factories.troll, 60)],
+}
+
+item_chances: Dict[int, List[Tuple[game.entity.Entity, int]]] = {
+    0: [(game.entity_factories.health_potion, 35)],
+    # 2: [(game.entity_factories.confusion_scroll, 10)],
+    # 4: [(game.entity_factories.lightning_scroll, 25), (game.entity_factories.sword, 5)],
+    # 6: [(game.entity_factories.fireball_scroll, 25), (game.entity_factories.chain_mail, 15)],
 }
 
 
@@ -117,11 +129,20 @@ class GameWorld:
 
     def __place_entities__(self, room: Rect, dungeon: GameMap, floor_number: int) -> None:
         number_of_monsters = random.randint(0, self.__get_max_value_for_floor__(max_monsters_by_floor, floor_number))
+        number_of_items = random.randint(0, self.__get_max_value_for_floor__(max_items_by_floor, floor_number))
+
         monsters: List[game.entity.Entity] = self.__get_entities_at_random__(
-            enemy_chances, number_of_monsters, floor_number
+            enemy_chances,
+            number_of_monsters,
+            floor_number,
+        )
+        items: List[game.entity.Entity] = self.__get_entities_at_random__(
+            item_chances,
+            number_of_items,
+            floor_number,
         )
 
-        for entity in monsters:
+        for entity in monsters + items:
             x = random.randint(room.x1 + 1, room.x2 - 1)
             y = random.randint(room.y1 + 1, room.y2 - 1)
 

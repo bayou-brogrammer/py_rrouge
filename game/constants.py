@@ -38,7 +38,7 @@ menu_width = 24
 """ Panels """
 # Message Panel
 log_panel_width = screen_width - 20
-log_panel_height = 9
+log_panel_height = 7
 log_panel_x = 0
 log_panel_y = screen_height - log_panel_height
 
@@ -52,3 +52,7 @@ stats_panel_y = 0
 map_width = 80 - stats_panel_width
 map_height = 43
 map_panel_width = 80 - stats_panel_width
+
+# Inventory Panel
+inventory_panel_x = map_width // 2
+inventory_panel_y = map_height // 2

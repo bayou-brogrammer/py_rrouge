@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Protocol, Union
+from typing import Protocol, Tuple, Union
 
 import tcod
 
@@ -27,3 +27,6 @@ If a handler is returned then it will become the active handler for future event
 If an action is returned it will be attempted and if it's valid then
 MainGameEventHandler will become the active handler.
 """
+
+
+Color_Type = Tuple[int, int, int]

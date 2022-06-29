@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Any, Iterator, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Tuple, Type, TypeVar
 
 import numpy as np
 from numpy.typing import NDArray
@@ -13,6 +13,8 @@ from game.node import Node
 
 if TYPE_CHECKING:
     import game.engine
+
+E = TypeVar("E", bound="game.entity.Entity")
 
 
 class GameMap(Node):
@@ -42,20 +44,37 @@ class GameMap(Node):
         yield from self.get_children(game.entity.Actor)
 
     @property
+    def items(self) -> Iterator[game.entity.Item]:
+        yield from self.get_children(game.entity.Item)
+
+    @property
     def gamemap(self) -> GameMap:
         return self
 
+    def entities_at_location(self, x: int, y: int, t: Type[E]) -> Iterator[E]:
+        for entity in self.entities:
+            if isinstance(entity, t) and entity.x == x and entity.y == y:
+                yield entity
+
+    def actors_at_location(self, x: int, y: int) -> Iterator[game.entity.Actor]:
+        for e in self.entities_at_location(x, y, game.entity.Actor):
+            yield e
+
+    def items_at_location(self, x: int, y: int) -> Iterator[game.entity.Item]:
+        for e in self.entities_at_location(x, y, game.entity.Item):
+            yield e
+
     def get_blocking_entity_at(self, x: int, y: int) -> Optional[game.entity.Entity]:
         """Returns an entity that blocks the position at x,y if one exists, otherwise returns None."""
-        for entity in self.entities:
-            if entity.blocks_movement and entity.x == x and entity.y == y:
+        for entity in self.entities_at_location(x, y, game.entity.Entity):
+            if entity.blocks_movement:
                 return entity
 
         return None
 
     def get_actor_at_location(self, x: int, y: int) -> Optional[game.entity.Actor]:
-        for actor in self.entities:
-            if isinstance(actor, game.entity.Actor) and actor.blocks_movement and actor.x == x and actor.y == y:
+        for actor in self.actors_at_location(x, y):
+            if actor.blocks_movement:
                 return actor
 
         return None

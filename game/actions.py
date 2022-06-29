@@ -6,7 +6,7 @@ import g
 import game.color
 import game.combat
 import game.exceptions
-from game.action import Action, ActionWithDirection
+from game.action import Action, ActionWithDirection, ItemAction
 
 if TYPE_CHECKING:
     import game.entity
@@ -59,3 +59,33 @@ class Bump(ActionWithDirection):
             return Melee(self.entity, self.dx, self.dy).perform()
         else:
             return Move(self.entity, self.dx, self.dy).perform()
+
+
+class Pickup(Action):
+    """Pickup an item and add it to the inventory, if there is room for it."""
+
+    def __init__(self, entity: game.entity.Actor):
+        super().__init__(entity)
+
+    def perform(self) -> None:
+        actor_location_x = self.entity.x
+        actor_location_y = self.entity.y
+        inventory = self.entity.inventory
+
+        for item in g.engine.gamemap.items_at_location(actor_location_x, actor_location_y):
+            if len(inventory.items) >= inventory.capacity:
+                raise game.exceptions.Impossible("Your inventory is full.")
+
+            assert item.parent is g.engine.gamemap
+            item.parent = self.entity.inventory
+            inventory.items.append(item)
+
+            g.engine.message_log.add_message(f"You picked up the {item.name}!")
+            return
+
+        raise game.exceptions.Impossible("There is nothing here to pick up.")
+
+
+class DropItem(ItemAction):
+    def perform(self) -> None:
+        self.entity.inventory.drop(self.item)

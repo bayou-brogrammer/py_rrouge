@@ -11,6 +11,7 @@ import g
 import game.exceptions
 import game.input_handlers
 import game_io
+from game import constants
 from game.typing import EventHandlerLike
 
 
@@ -18,7 +19,11 @@ def main() -> None:
     screen_width = 80
     screen_height = 50
 
-    tileset = tcod.tileset.load_tilesheet(Path("data/dejavu16x16_gs_tc.png"), 32, 8, tcod.tileset.CHARMAP_TCOD)
+    tileset = tcod.tileset.load_tilesheet(
+        Path(constants.tileset),
+        *constants.tileset_bounds,
+        charmap=constants.charmap,
+    )
     event_handler: EventHandlerLike = game.input_handlers.MainMenuHandler()
 
     with tcod.context.new(

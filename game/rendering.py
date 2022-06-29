@@ -4,6 +4,7 @@ import numpy as np
 import tcod
 
 import g
+import game.color
 import game.constants
 import game.engine
 import game.game_map
@@ -47,23 +48,52 @@ def render_map(console: tcod.Console, gamemap: game.game_map.GameMap) -> None:
     visible.choose((gamemap.memory, light), out=gamemap.memory)
 
 
-def render_ui(console: tcod.Console, engine: game.engine.Engine) -> None:
-    UI_WIDTH = game.constants.ui_width
-    UI_LEFT = console.width - UI_WIDTH
-    LOG_HEIGHT = console.height - 8
+def render_log(console: tcod.Console, engine: game.engine.Engine) -> None:
+    game.render_functions.render_panel(
+        console,
+        x=game.constants.log_panel_x,
+        y=game.constants.log_panel_y,
+        width=game.constants.log_panel_width,
+        height=game.constants.log_panel_height,
+        title="Log",
+        title_fg=game.color.yellow,
+    )
 
     engine.message_log.render(
-        console=console, x=UI_LEFT, y=console.height - LOG_HEIGHT, width=UI_WIDTH, height=LOG_HEIGHT
+        console,
+        x=game.constants.log_panel_x + 1,
+        y=game.constants.log_panel_y + 1,
+        width=game.constants.log_panel_width - 1,
+        height=game.constants.log_panel_height - 2,
     )
-    console.draw_rect(UI_LEFT, 0, UI_WIDTH, 2, 0x20, (0xFF, 0xFF, 0xFF), (0, 0, 0))
+
+
+def render_stats(console: tcod.Console, engine: game.engine.Engine) -> None:
+    game.render_functions.render_panel(
+        console,
+        x=game.constants.stats_panel_x,
+        y=game.constants.stats_panel_y,
+        width=game.constants.stats_panel_width,
+        height=game.constants.stats_panel_height,
+        title="Stats",
+        title_fg=game.color.yellow,
+    )
 
     game.render_functions.render_bar(
         console=console,
-        x=UI_LEFT,
-        y=0,
+        x=game.constants.stats_panel_x + 1,
+        y=game.constants.stats_panel_y + 1,
         current_value=engine.player.fighter.hp,
         maximum_value=engine.player.fighter.max_hp,
-        total_width=UI_WIDTH,
+        total_width=game.constants.stats_panel_width - 2,
     )
 
-    game.render_functions.render_names_at_mouse_location(console=console, x=UI_LEFT, y=1, engine=engine)
+
+def render_ui(console: tcod.Console, engine: game.engine.Engine) -> None:
+    # Log Panel.
+    render_log(console=console, engine=engine)
+    # Stats Panel
+    render_stats(console=console, engine=engine)
+
+    # Tooltips
+    game.render_functions.render_names_at_mouse_location(console=console, engine=engine)

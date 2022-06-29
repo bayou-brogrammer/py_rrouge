@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import os
 from typing import Optional
 
@@ -13,8 +12,6 @@ import game.exceptions
 from game.typing import ActionOrHandler
 
 from .event_handler import EventHandler
-
-logger = logging.getLogger(__name__)
 
 MOVE_KEYS = {
     # Arrow keys.
@@ -68,7 +65,7 @@ class MainGameEventHandler(EventHandler):
         try:
             action.perform()
         except game.exceptions.Impossible as exc:
-            logger.fatal(exc.args[0])
+            g.engine.message_log.add_message(exc.args[0], game.color.impossible)
             return self
 
         g.engine.handle_enemy_turns()
@@ -80,6 +77,8 @@ class MainGameEventHandler(EventHandler):
         return self
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        from .inventory_handler import InventoryActivateHandler, InventoryDropHandler
+
         key = event.sym
 
         if key in MOVE_KEYS:
@@ -91,9 +90,15 @@ class MainGameEventHandler(EventHandler):
         match key:
             case tcod.event.K_ESCAPE:
                 raise SystemExit()
-            case tcod.event.KeySym.F8:
-                if __debug__:
-                    g.fullbright = not g.fullbright
+            case tcod.event.K_g:
+                return game.actions.Pickup(g.engine.player)
+            case tcod.event.K_i:
+                return InventoryActivateHandler()
+            case tcod.event.K_d:
+                return InventoryDropHandler()
+
+        if __debug__ and key == tcod.event.KeySym.F8:
+            g.fullbright = not g.fullbright
 
         return None
 
@@ -111,3 +116,34 @@ class GameOverEventHandler(EventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
             self.on_quit()
+
+
+class AskUserEventHandler(MainGameEventHandler):
+    """Handles user input for actions which require special input."""
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        """By default any key exits this input handler."""
+        if event.sym in {  # Ignore modifier keys.
+            tcod.event.K_LSHIFT,
+            tcod.event.K_RSHIFT,
+            tcod.event.K_LCTRL,
+            tcod.event.K_RCTRL,
+            tcod.event.K_LALT,
+            tcod.event.K_RALT,
+            tcod.event.K_LGUI,
+            tcod.event.K_RGUI,
+            tcod.event.K_MODE,
+        }:
+            return None
+        return self.on_exit()
+
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
+        """By default any mouse click exits this input handler."""
+        return self.on_exit()
+
+    def on_exit(self) -> Optional[ActionOrHandler]:
+        """Called when the user is trying to exit or cancel an action.
+
+        By default this returns to the main event handler.
+        """
+        return MainGameEventHandler()

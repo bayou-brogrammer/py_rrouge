@@ -44,3 +44,24 @@ class ActionWithDirection(Action):
 
     def perform(self) -> None:
         raise NotImplementedError()
+
+
+class ItemAction(Action):
+    def __init__(self, entity: game.entity.Actor, item: game.entity.Item, target_xy: Optional[Tuple[int, int]] = None):
+        super().__init__(entity)
+        self.item = item
+
+        if not target_xy:
+            target_xy = entity.x, entity.y
+
+        self.target_xy = target_xy
+
+    @property
+    def target_actor(self) -> Optional[game.entity.Actor]:
+        """Return the actor at this actions destination."""
+        return g.engine.gamemap.get_actor_at_location(*self.target_xy)
+
+    def perform(self) -> None:
+        """Invoke the items ability, this action will be given to provide context."""
+        if self.item.consumable:
+            self.item.consumable.activate(self)
