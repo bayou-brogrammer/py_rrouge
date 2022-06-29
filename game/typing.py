@@ -16,7 +16,7 @@ class EventHandlerLike(Protocol):
         """Handle an event and return the next active event handler."""
         ...
 
-    def on_render(self, console: tcod.Console) -> None:
+    def on_render(self, root_console: tcod.Console) -> None:
         ...
 
 

@@ -25,7 +25,7 @@ def new_game() -> game.engine.Engine:
     engine.player = game.entity_factories.player.spawn(engine.gamemap, *engine.gamemap.player_start)
     engine.update_fov()
 
-    # engine.message_log.add_message("Hello and welcome, adventurer, to yet another dungeon!", game.color.welcome_text)
+    engine.message_log.add_message("Hello and welcome, adventurer, to yet another dungeon!", game.color.welcome_text)
 
     g.engine = engine
     return engine

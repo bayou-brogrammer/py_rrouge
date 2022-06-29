@@ -16,28 +16,21 @@ from game.typing import EventHandlerLike
 
 
 def main() -> None:
-    screen_width = 80
-    screen_height = 50
-
-    tileset = tcod.tileset.load_tilesheet(
-        Path(constants.tileset),
-        *constants.tileset_bounds,
-        charmap=constants.charmap,
-    )
+    tileset = tcod.tileset.load_tilesheet(Path(constants.tileset), *constants.tileset_bounds, charmap=constants.charmap)
     event_handler: EventHandlerLike = game.input_handlers.MainMenuHandler()
 
     with tcod.context.new(
-        columns=screen_width,
-        rows=screen_height,
+        columns=constants.screen_width,
+        rows=constants.screen_height,
         tileset=tileset,
         title="Yet Another Roguelike Tutorial",
         vsync=True,
     ) as g.context:
-        root_console = tcod.Console(screen_width, screen_height, order="F")
+        root_console = tcod.Console(constants.screen_width, constants.screen_height, order="F")
         try:
             while True:
                 root_console.clear()
-                event_handler.on_render(console=root_console)
+                event_handler.on_render(root_console)
                 g.context.present(root_console)
 
                 try:

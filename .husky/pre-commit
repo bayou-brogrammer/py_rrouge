@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running pre-commit hooks..."
+
+echo "Running black..."
+black --check .
+
+echo "Running iSort..."
+isort --check .
+
+echo "Running Mypy..."
+mypy --check .

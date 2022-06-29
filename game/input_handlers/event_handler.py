@@ -12,7 +12,7 @@ from game.typing import ActionOrHandler
 from .base_event import BaseEventHandler
 
 
-class EventHandler(BaseEventHandler):
+class EventHandler(BaseEventHandler, game.rendering.GameRenderer):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event, perform any actions, then return the next active event handler."""
         from .game_handler import GameOverEventHandler
@@ -40,7 +40,3 @@ class EventHandler(BaseEventHandler):
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
         if g.engine.gamemap.in_bounds(event.tile.x, event.tile.y):
             g.engine.mouse_location = event.tile.x, event.tile.y
-
-    def on_render(self, console: tcod.Console) -> None:
-        game.rendering.render_map(console, g.engine.gamemap)
-        game.rendering.render_ui(console, g.engine)

@@ -51,6 +51,10 @@ class GameMap(Node):
     def gamemap(self) -> GameMap:
         return self
 
+    def in_bounds(self, x: int, y: int) -> bool:
+        """Return True if x and y are inside of the bounds of this map."""
+        return 0 <= x < self.width and 0 <= y < self.height
+
     def entities_at_location(self, x: int, y: int, t: Type[E]) -> Iterator[E]:
         for entity in self.entities:
             if isinstance(entity, t) and entity.x == x and entity.y == y:
@@ -79,6 +83,12 @@ class GameMap(Node):
 
         return None
 
-    def in_bounds(self, x: int, y: int) -> bool:
-        """Return True if x and y are inside of the bounds of this map."""
-        return 0 <= x < self.width and 0 <= y < self.height
+    def get_names_at_location(self, x: int, y: int) -> Optional[str]:
+        if not self.in_bounds(x, y) or not self.visible[x, y]:
+            return None
+
+        entity_names_at_location = [e.name for e in self.entities_at_location(x, y, game.entity.Entity)]
+        if len(entity_names_at_location) == 0:
+            return None
+
+        return ", ".join(sorted(n.capitalize() for n in entity_names_at_location))
